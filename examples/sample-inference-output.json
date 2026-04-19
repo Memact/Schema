@@ -1,0 +1,44 @@
+{
+  "schema_version": "memact.inference.v0",
+  "generated_at": "2026-04-19T00:00:00.000Z",
+  "source": {
+    "activity_count": 5
+  },
+  "theme_counts": {
+    "startup": 3,
+    "coding": 1,
+    "attention": 1
+  },
+  "records": [
+    {
+      "id": "act_1",
+      "source_label": "YC founder interview about shipping MVPs",
+      "canonical_themes": ["startup"],
+      "sources": [{"domain": "youtube.com"}]
+    },
+    {
+      "id": "act_2",
+      "source_label": "Search: how to launch product fast",
+      "canonical_themes": ["startup"],
+      "sources": [{"domain": "google.com"}]
+    },
+    {
+      "id": "act_3",
+      "source_label": "Debugging React extension API in terminal",
+      "canonical_themes": ["coding"],
+      "sources": [{"domain": "github.com"}]
+    },
+    {
+      "id": "act_4",
+      "source_label": "Essay about proof before permission",
+      "canonical_themes": ["startup"],
+      "sources": [{"domain": "example.com"}]
+    },
+    {
+      "id": "act_5",
+      "source_label": "Deep work and attention notes",
+      "canonical_themes": ["attention"],
+      "sources": [{"domain": "example.com"}]
+    }
+  ]
+}
