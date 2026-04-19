@@ -18,12 +18,15 @@ Capture -> Inference -> Schema -> Interface / Query -> Origin + Influence
 
 Schema consumes Inference output. It does not read Capture internals and does not claim causality.
 
+Schema supports Memact's citation and answer engine by identifying repeated mental-frame signals that can be shown as context beside cited answers. It should never replace citations.
+
 ## What It Does
 
 - reads `memact.inference.v0` records
 - counts repeated canonical themes
 - detects possible schema signals once support thresholds are met
 - keeps evidence records attached to every schema signal
+- supports cited answers with cautious context, not diagnosis
 - uses guarded language suitable for sensitive self-understanding
 
 ## Public Output Contract
