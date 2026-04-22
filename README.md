@@ -13,7 +13,7 @@ Activities are not schemas. Activities are evidence. Schemas are cautious signal
 ## Pipeline Position
 
 ```text
-Capture -> Inference -> Schema -> Interface / Query -> Origin + Influence
+Capture -> Inference -> Schema -> Interface / Query -> Influence / Origin
 ```
 
 Schema consumes Inference output. It does not read Capture internals and does not claim causality.
@@ -79,7 +79,7 @@ Analyze Inference output:
 npm run schema -- --input ..\inference-output.json --format report
 ```
 
-Emit JSON for Interface, Origin, and Influence:
+Emit JSON for Interface / Query, Influence, and Origin:
 
 ```powershell
 npm run schema -- --input ..\inference-output.json --format json
