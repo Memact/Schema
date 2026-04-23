@@ -87,11 +87,24 @@ function scoreSchema(rule, records, themeCounts, minSupport) {
   const themeCoverage = matchedThemes.length / rule.themes.length;
   const repetition = Math.min(1, support / Math.max(minSupport, 8));
   const confidence = Number(((themeCoverage * 0.45) + (repetition * 0.55)).toFixed(4));
+  const state = support >= Math.max(minSupport * 3, 8)
+    ? "stable"
+    : support >= Math.max(minSupport * 2, 5)
+      ? "reinforced"
+      : "emerging";
+  const stateLabel =
+    state === "stable"
+      ? "Stable schema"
+      : state === "reinforced"
+        ? "Reinforced schema"
+        : "Emerging schema";
 
   return {
     id: rule.id,
     label: rule.label,
     summary: rule.summary,
+    state,
+    state_label: stateLabel,
     matched_themes: matchedThemes,
     support,
     confidence,

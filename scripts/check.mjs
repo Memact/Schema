@@ -12,4 +12,8 @@ if (!result.schemas.some((schema) => schema.id === "builder_agency")) {
   throw new Error("Expected builder_agency schema signal.");
 }
 
+if (!result.schemas.every((schema) => ["emerging", "reinforced", "stable"].includes(schema.state))) {
+  throw new Error("Expected schema state labels to be assigned.");
+}
+
 console.log("Schema check passed.");
