@@ -16,16 +16,18 @@ Activities are not schemas. Activities are evidence. Schemas are cautious signal
 Capture -> Inference -> Schema -> Interface / Query -> Influence / Origin
 ```
 
-Schema consumes Inference output. It does not read Capture internals and does not claim causality.
+Schema consumes retained Inference packets. It does not read Capture internals and does not claim causality.
 
 Schema supports Memact's citation and answer engine by identifying repeated mental-frame signals that can be shown as context beside cited answers. It should never replace citations.
 
 ## What It Does
 
 - reads `memact.inference.v0` records
+- ignores records that did not pass the Inference meaningfulness gate
 - counts repeated canonical themes
 - detects possible schema signals once support thresholds are met
 - keeps evidence records attached to every schema signal
+- emits a schema network linking schemas to themes and meaning packets
 - supports cited answers with cautious context, not diagnosis
 - uses guarded language suitable for sensitive self-understanding
 
@@ -41,10 +43,20 @@ Schema supports Memact's citation and answer engine by identifying repeated ment
       "matched_themes": ["startup", "coding"],
       "support": 4,
       "confidence": 0.725,
+      "evidence_records": [
+        {
+          "packet_id": "packet:act_1",
+          "meaningful_score": 0.64
+        }
+      ],
       "claim_type": "schema_signal",
       "language_guardrail": "This is a possible schema signal, not a diagnosis or causal claim."
     }
-  ]
+  ],
+  "schema_network": {
+    "nodes": [],
+    "edges": []
+  }
 }
 ```
 
@@ -88,6 +100,7 @@ npm run schema -- --input ..\inference-output.json --format json
 ## Design Rules
 
 - schema signals require repetition
+- schema signals are built from meaningful packets only
 - schema language must stay cautious
 - no diagnosis, no causal certainty, no personality claims
 - every schema signal must cite evidence records

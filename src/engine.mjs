@@ -21,7 +21,10 @@ const DEFAULT_SCHEMA_RULES = [
 
 export function detectSchemas(inferenceOutput, options = {}) {
   const minSupport = Number(options.minSupport ?? 3);
-  const records = Array.isArray(inferenceOutput?.records) ? inferenceOutput.records : [];
+  const minimumMeaningfulScore = Number(options.minimumMeaningfulScore ?? 0.38);
+  const records = (Array.isArray(inferenceOutput?.records) ? inferenceOutput.records : [])
+    .filter((record) => record.meaningful !== false)
+    .filter((record) => Number(record.meaningful_score ?? 1) >= minimumMeaningfulScore);
   const rules = options.schemaRules ?? DEFAULT_SCHEMA_RULES;
   const themeCounts = countThemes(records);
   const schemas = rules
@@ -34,11 +37,14 @@ export function detectSchemas(inferenceOutput, options = {}) {
     generated_at: new Date().toISOString(),
     source: {
       inference_schema_version: inferenceOutput?.schema_version ?? null,
-      inferred_record_count: records.length,
+      inferred_record_count: Array.isArray(inferenceOutput?.records) ? inferenceOutput.records.length : 0,
+      meaningful_record_count: records.length,
     },
     min_support: minSupport,
+    minimum_meaningful_score: minimumMeaningfulScore,
     theme_counts: themeCounts,
     schemas,
+    schema_network: buildSchemaNetwork(schemas),
   };
 }
 
@@ -79,8 +85,11 @@ function scoreSchema(rule, records, themeCounts, minSupport) {
     .slice(0, 8)
     .map((record) => ({
       id: record.id,
+      packet_id: record.packet_id ?? null,
       source_label: record.source_label,
       themes: record.canonical_themes?.filter((theme) => matchedThemes.includes(theme)) ?? [],
+      meaningful_score: Number(record.meaningful_score ?? 1),
+      meaning_reasons: record.meaning_reasons ?? [],
       sources: record.sources ?? [],
     }));
 
@@ -112,6 +121,57 @@ function scoreSchema(rule, records, themeCounts, minSupport) {
     claim_type: "schema_signal",
     language_guardrail: "This is a possible schema signal, not a diagnosis or causal claim.",
   };
+}
+
+function buildSchemaNetwork(schemas) {
+  const nodes = [];
+  const edges = [];
+  const seen = new Set();
+  const addNode = (node) => {
+    if (!node?.id || seen.has(node.id)) return;
+    seen.add(node.id);
+    nodes.push(node);
+  };
+
+  schemas.forEach((schema) => {
+    const schemaId = `schema:${schema.id}`;
+    addNode({
+      id: schemaId,
+      type: "schema",
+      label: schema.label,
+      state: schema.state,
+      confidence: schema.confidence,
+    });
+
+    (schema.matched_themes ?? []).forEach((theme) => {
+      const themeId = `theme:${theme}`;
+      addNode({ id: themeId, type: "theme", label: theme });
+      edges.push({
+        from: schemaId,
+        to: themeId,
+        type: "built_from_theme",
+        weight: Number(schema.support || 1),
+      });
+    });
+
+    (schema.evidence_records ?? []).forEach((record) => {
+      const packetId = record.packet_id || `packet:${record.id}`;
+      addNode({
+        id: packetId,
+        type: "meaning_packet",
+        label: record.source_label,
+        score: Number(record.meaningful_score ?? 1),
+      });
+      edges.push({
+        from: schemaId,
+        to: packetId,
+        type: "supported_by_packet",
+        weight: Number(record.meaningful_score ?? 1),
+      });
+    });
+  });
+
+  return { nodes, edges };
 }
 
 function countThemes(records) {
