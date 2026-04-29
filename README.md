@@ -2,13 +2,13 @@
 
 Version: `v0.0`
 
-Schema is the deterministic pattern layer in the Memact architecture.
+Schema is the deterministic cognitive-schema layer in the Memact architecture.
 
 It answers:
 
-`What repeated mental frame may be forming from inferred activity themes?`
+`What virtual cognitive schema may be forming from meaningful activity?`
 
-Activities are not schemas. Activities are evidence. Schemas are cautious signals inferred from repeated themes across time.
+Activities are not schemas. Activities are evidence. Schema forms virtual cognitive-schema packets from repeated meaningful activity, cognitive markers, sources, and time. This is the core Memact mirror.
 
 ## Pipeline Position
 
@@ -18,17 +18,18 @@ Capture -> Inference -> Schema -> Interface / Query -> Influence / Origin
 
 Schema consumes retained Inference packets. It does not read Capture internals and does not claim causality.
 
-Schema supports Memact's citation and answer engine by identifying repeated mental-frame signals that can be shown as context beside cited answers. It should never replace citations.
+Schema is the main surface for Memact's answer engine. Origin and Influence are useful, but they support the schema mirror instead of replacing it.
 
 ## What It Does
 
 - reads `memact.inference.v0` records
 - ignores records that did not pass the Inference meaningfulness gate
-- counts repeated canonical themes
-- detects possible schema signals once support thresholds are met
+- requires repeated meaningful packets
+- requires cognitive markers, not only topic matches
+- detects virtual cognitive-schema signals once support thresholds are met
 - keeps evidence records attached to every schema signal
-- emits a schema network linking schemas to themes and meaning packets
-- supports cited answers with cautious context, not diagnosis
+- emits a schema network linking virtual schemas to markers, themes, and meaning packets
+- supports answers with cautious context, not diagnosis
 - uses guarded language suitable for sensitive self-understanding
 
 ## Public Output Contract
@@ -49,8 +50,12 @@ Schema supports Memact's citation and answer engine by identifying repeated ment
           "meaningful_score": 0.64
         }
       ],
-      "claim_type": "schema_signal",
-      "language_guardrail": "This is a possible schema signal, not a diagnosis or causal claim."
+      "schema_kind": "virtual_cognitive_schema",
+      "core_interpretation": "Progress feels real when it becomes built, shipped, or visible.",
+      "action_tendency": "move toward building, debugging, launching, proving, or showing work",
+      "marker_categories": ["interpretation", "action"],
+      "claim_type": "virtual_cognitive_schema_signal",
+      "language_guardrail": "This is a virtual cognitive-schema signal from repeated evidence, not a diagnosis or causal certainty."
     }
   ],
   "schema_network": {
@@ -99,8 +104,10 @@ npm run schema -- --input ..\inference-output.json --format json
 
 ## Design Rules
 
-- schema signals require repetition
-- schema signals are built from meaningful packets only
+- virtual schemas require repetition
+- virtual schemas are built from meaningful packets only
+- theme matches alone must not form schemas
+- cognitive markers must be present across more than one marker group
 - schema language must stay cautious
 - no diagnosis, no causal certainty, no personality claims
 - every schema signal must cite evidence records
