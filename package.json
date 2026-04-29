@@ -2,7 +2,7 @@
   "name": "memact-schema",
   "private": true,
   "version": "0.0.0",
-  "description": "Deterministic schema layer for Memact inferred activity themes.",
+  "description": "Evidence-induced virtual cognitive schema layer for Memact.",
   "license": "SEE LICENSE IN LICENSE",
   "type": "module",
   "main": "./src/engine.mjs",
@@ -15,7 +15,8 @@
     "schema",
     "cognitive-schema",
     "deterministic",
-    "themes"
+    "evidence-induced",
+    "memory"
   ],
   "repository": {
     "type": "git",

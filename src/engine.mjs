@@ -1,190 +1,172 @@
 const DEFAULT_MIN_SUPPORT = 3;
 const DEFAULT_MIN_MEANINGFUL_SCORE = 0.38;
-const DEFAULT_MIN_RECORD_SCORE = 0.28;
 const DEFAULT_MIN_WEIGHTED_SUPPORT = 1.15;
-const DEFAULT_MIN_MARKER_CATEGORIES = 2;
+const DEFAULT_MIN_COHESION = 0.05;
+const DEFAULT_MAX_SCHEMAS = 8;
 
-const DEFAULT_SCHEMA_RULES = [
-  {
-    id: "builder_agency",
-    label: "Builder / agency schema",
-    themes: ["startup", "coding", "ai"],
-    summary: "A virtual schema where progress is interpreted through building, shipping, tools, and visible proof.",
-    core_interpretation: "Progress feels real when it becomes built, shipped, or visible.",
-    action_tendency: "move toward building, debugging, launching, proving, or showing work",
-    emotional_signature: ["urgency", "agency", "pressure to prove"],
-    marker_groups: {
-      interpretation: ["real", "proof", "prove", "mvp", "visible"],
-      action: ["build", "builder", "ship", "shipping", "launch", "debug", "project", "repo", "github", "product"],
-      identity: ["founder", "startup", "developer", "maker"],
-    },
-    required_marker_categories: ["interpretation"],
-    markers: [
-      "build",
-      "builder",
-      "ship",
-      "shipping",
-      "launch",
-      "mvp",
-      "proof",
-      "prove",
-      "founder",
-      "startup",
-      "github",
-      "project",
-      "repo",
-      "product",
-      "real",
-    ],
-  },
-  {
-    id: "performance_evaluation",
-    label: "Performance / evaluation schema",
-    themes: ["exam", "productivity"],
-    summary: "A virtual schema where progress is interpreted through scores, deadlines, output, or external evaluation.",
-    core_interpretation: "Worth or readiness feels tied to measurable performance.",
-    action_tendency: "compare, prepare, optimize, measure, or seek validation",
-    emotional_signature: ["pressure", "comparison", "fear of falling behind"],
-    marker_groups: {
-      interpretation: ["worth", "readiness", "accepted", "rejected", "better than", "behind"],
-      action: ["prepare", "optimize", "apply", "application", "test", "exam"],
-      evaluation: ["score", "rank", "marks", "deadline", "output", "prove myself"],
-    },
-    required_marker_categories: ["interpretation"],
-    markers: [
-      "exam",
-      "score",
-      "rank",
-      "marks",
-      "test",
-      "deadline",
-      "output",
-      "behind",
-      "better than",
-      "apply",
-      "application",
-      "accepted",
-      "rejected",
-      "prove myself",
-    ],
-  },
-  {
-    id: "attention_regulation",
-    label: "Attention regulation schema",
-    themes: ["attention", "burnout", "productivity"],
-    summary: "A virtual schema where attention, focus, distraction, and overload become the frame for understanding life.",
-    core_interpretation: "A thought is understood through whether attention is protected or fragmented.",
-    action_tendency: "seek focus, reduce noise, create routines, or recover from overload",
-    emotional_signature: ["overload", "fatigue", "need for control"],
-    marker_groups: {
-      interpretation: ["fragmented", "overwhelmed", "burnout", "dopamine"],
-      action: ["focus", "deep work", "routine", "habit", "flow"],
-      emotion: ["tired", "fatigue", "overload", "control"],
-    },
-    required_marker_categories: ["interpretation"],
-    markers: [
-      "focus",
-      "attention",
-      "deep work",
-      "distraction",
-      "dopamine",
-      "overwhelmed",
-      "burnout",
-      "tired",
-      "fatigue",
-      "routine",
-      "habit",
-      "flow",
-    ],
-  },
-  {
-    id: "identity_direction",
-    label: "Identity direction schema",
-    themes: ["identity", "startup", "coding", "ai"],
-    summary: "A virtual schema where choices are interpreted through becoming a certain kind of person.",
-    core_interpretation: "Activities are filtered through who the user is trying to become.",
-    action_tendency: "select inputs, projects, and people that reinforce a future self-image",
-    emotional_signature: ["aspiration", "self-comparison", "identity tension"],
-    marker_groups: {
-      interpretation: ["worth", "confidence", "future", "life"],
-      action: ["become", "career", "choose", "select"],
-      identity: ["identity", "founder", "builder", "developer", "person", "self"],
-    },
-    required_marker_categories: ["interpretation"],
-    markers: [
-      "identity",
-      "become",
-      "future",
-      "founder",
-      "builder",
-      "developer",
-      "person",
-      "self",
-      "worth",
-      "confidence",
-      "career",
-      "life",
-    ],
-  },
-  {
-    id: "visibility_validation",
-    label: "Visibility / validation schema",
-    themes: ["startup", "identity", "productivity"],
-    summary: "A virtual schema where public proof, audience, followers, and recognition shape the interpretation of progress.",
-    core_interpretation: "An idea feels stronger when it is seen, recognized, or validated by others.",
-    action_tendency: "publish, check response, compare attention, or seek visible proof",
-    emotional_signature: ["visibility pressure", "validation seeking", "public self-monitoring"],
-    marker_groups: {
-      interpretation: ["recognition", "validation", "visible proof"],
-      action: ["post", "publish", "check response", "public"],
-      social: ["followers", "views", "likes", "audience", "profile", "social", "twitter", "x.com", "linkedin", "bluesky"],
-    },
-    required_marker_categories: ["interpretation"],
-    markers: [
-      "followers",
-      "views",
-      "likes",
-      "post",
-      "public",
-      "audience",
-      "recognition",
-      "attention",
-      "viral",
-      "profile",
-      "social",
-      "twitter",
-      "x.com",
-      "linkedin",
-      "bluesky",
-    ],
-  },
-];
+const STOP_WORDS = new Set([
+  "about",
+  "after",
+  "again",
+  "also",
+  "and",
+  "are",
+  "before",
+  "being",
+  "can",
+  "com",
+  "did",
+  "does",
+  "for",
+  "from",
+  "has",
+  "have",
+  "how",
+  "into",
+  "just",
+  "like",
+  "not",
+  "now",
+  "off",
+  "once",
+  "only",
+  "page",
+  "that",
+  "the",
+  "then",
+  "this",
+  "through",
+  "toward",
+  "was",
+  "were",
+  "what",
+  "when",
+  "where",
+  "while",
+  "with",
+  "your",
+]);
+
+const LOW_SIGNAL_TERMS = new Set([
+  "account",
+  "admin",
+  "billing",
+  "dashboard",
+  "example",
+  "home",
+  "login",
+  "meaningful",
+  "page",
+  "privacy",
+  "profile",
+  "settings",
+  "signin",
+  "signup",
+  "source",
+  "specific",
+  "repeated",
+  "activity",
+]);
+
+const COGNITIVE_DIMENSIONS = {
+  action: [
+    "apply",
+    "build",
+    "change",
+    "choose",
+    "create",
+    "debug",
+    "decide",
+    "finish",
+    "fix",
+    "launch",
+    "learn",
+    "make",
+    "plan",
+    "practice",
+    "prepare",
+    "prove",
+    "publish",
+    "ship",
+    "solve",
+    "start",
+    "work",
+  ],
+  evaluation: [
+    "accepted",
+    "behind",
+    "better",
+    "compare",
+    "deadline",
+    "fail",
+    "grade",
+    "judge",
+    "rank",
+    "ready",
+    "rejected",
+    "score",
+    "test",
+    "value",
+    "worth",
+  ],
+  identity: [
+    "become",
+    "career",
+    "confidence",
+    "founder",
+    "future",
+    "identity",
+    "life",
+    "myself",
+    "person",
+    "self",
+  ],
+  affect: [
+    "anxiety",
+    "burnout",
+    "feel",
+    "fear",
+    "focus",
+    "guilt",
+    "happy",
+    "obsessed",
+    "overwhelmed",
+    "pressure",
+    "stress",
+    "tired",
+  ],
+  social: [
+    "audience",
+    "followers",
+    "friends",
+    "likes",
+    "people",
+    "public",
+    "recognition",
+    "share",
+    "social",
+    "views",
+  ],
+};
 
 export function detectSchemas(inferenceOutput, options = {}) {
   const minSupport = Number(options.minSupport ?? DEFAULT_MIN_SUPPORT);
   const minimumMeaningfulScore = Number(options.minimumMeaningfulScore ?? DEFAULT_MIN_MEANINGFUL_SCORE);
-  const minRecordScore = Number(options.minRecordScore ?? DEFAULT_MIN_RECORD_SCORE);
   const minWeightedSupport = Number(options.minWeightedSupport ?? DEFAULT_MIN_WEIGHTED_SUPPORT);
-  const minMarkerCategories = Number(options.minMarkerCategories ?? DEFAULT_MIN_MARKER_CATEGORIES);
+  const minCohesion = Number(options.minCohesion ?? DEFAULT_MIN_COHESION);
+  const maxSchemas = Number(options.maxSchemas ?? DEFAULT_MAX_SCHEMAS);
   const records = (Array.isArray(inferenceOutput?.records) ? inferenceOutput.records : [])
     .filter((record) => record.meaningful !== false)
-    .filter((record) => Number(record.meaningful_score ?? 1) >= minimumMeaningfulScore);
-  const rules = options.schemaRules ?? DEFAULT_SCHEMA_RULES;
+    .filter((record) => Number(record.meaningful_score ?? 1) >= minimumMeaningfulScore)
+    .map(profileRecord);
+
   const themeCounts = countThemes(records);
-  const schemas = rules
-    .map((rule) => scoreSchema(rule, records, {
-      minSupport,
-      minRecordScore,
-      minWeightedSupport,
-      minMarkerCategories,
-    }))
-    .filter(Boolean)
-    .sort((a, b) =>
-      b.confidence - a.confidence ||
-      b.weighted_support - a.weighted_support ||
-      b.support - a.support ||
-      a.id.localeCompare(b.id)
-    );
+  const schemas = induceSchemas(records, {
+    minSupport,
+    minWeightedSupport,
+    minCohesion,
+    maxSchemas,
+  });
 
   return {
     schema_version: "memact.schema.v0",
@@ -194,21 +176,22 @@ export function detectSchemas(inferenceOutput, options = {}) {
       inferred_record_count: Array.isArray(inferenceOutput?.records) ? inferenceOutput.records.length : 0,
       meaningful_record_count: records.length,
     },
+    formation_mode: "evidence_induced",
     min_support: minSupport,
     minimum_meaningful_score: minimumMeaningfulScore,
-    min_record_score: minRecordScore,
     min_weighted_support: minWeightedSupport,
-    min_marker_categories: minMarkerCategories,
+    min_cohesion: minCohesion,
     theme_counts: themeCounts,
     schemas,
     schema_network: buildSchemaNetwork(schemas),
-    formation_principle: "Virtual cognitive schemas are formed from repeated meaningful packets, not raw browsing volume.",
+    formation_principle: "Virtual cognitive schemas are induced from repeated meaningful activity, co-occurring concepts, cognitive dimensions, source spread, and time. They are not selected from a fixed topic taxonomy.",
   };
 }
 
 export function formatSchemaReport(result) {
   const lines = [
     "Memact Schema Report",
+    `Formation mode: ${result.formation_mode || "unknown"}`,
     `Inferred records: ${result.source.inferred_record_count}`,
     `Meaningful records: ${result.source.meaningful_record_count}`,
     `Minimum support: ${result.min_support}`,
@@ -231,200 +214,281 @@ export function formatSchemaReport(result) {
   return lines.join("\n");
 }
 
-function scoreSchema(rule, records, thresholds) {
-  const scoredRecords = records
-    .map((record) => scoreRecordAgainstRule(record, rule))
-    .filter((record) => record.schema_record_score >= thresholds.minRecordScore)
-    .sort((a, b) => b.schema_record_score - a.schema_record_score || a.source_label.localeCompare(b.source_label));
+function induceSchemas(records, thresholds) {
+  const anchorCounts = countAnchors(records);
+  const anchors = [...anchorCounts.entries()]
+    .filter(([, count]) => count >= thresholds.minSupport)
+    .map(([anchor]) => anchor)
+    .filter((anchor) => !LOW_SIGNAL_TERMS.has(anchor));
 
+  const candidates = anchors
+    .map((anchor) => buildCandidate(anchor, records, thresholds))
+    .filter(Boolean)
+    .sort((a, b) =>
+      b.confidence - a.confidence ||
+      b.weighted_support - a.weighted_support ||
+      b.support - a.support ||
+      a.id.localeCompare(b.id)
+    );
+
+  return dedupeSchemas(candidates).slice(0, thresholds.maxSchemas);
+}
+
+function buildCandidate(anchor, records, thresholds) {
+  const scoredRecords = records
+    .map((record) => scoreRecordForAnchor(record, anchor))
+    .filter((record) => record.schema_record_score > 0)
+    .sort((a, b) => b.schema_record_score - a.schema_record_score || a.source_label.localeCompare(b.source_label));
   const support = scoredRecords.length;
   const weightedSupport = round(scoredRecords.reduce((sum, record) => sum + record.schema_record_score, 0), 4);
-  const distinctSourceCount = countDistinctSources(scoredRecords);
   const activeDayCount = countActiveDays(scoredRecords);
-  const matchedThemes = unique(scoredRecords.flatMap((record) => record.themes));
-  const matchedMarkers = unique(scoredRecords.flatMap((record) => record.matched_markers));
-  const markerCategories = unique(scoredRecords.flatMap((record) => record.marker_categories));
-  const markerCoverage = rule.markers.length ? matchedMarkers.length / Math.min(rule.markers.length, 10) : 0;
-  const categoryCoverage = markerCategoryNames(rule).length
-    ? markerCategories.length / markerCategoryNames(rule).length
-    : 0;
-  const themeCoverage = rule.themes.length ? matchedThemes.length / rule.themes.length : 0;
-  const evidenceDiversity = Math.min(1, ((distinctSourceCount >= 2 ? 0.5 : 0.25) + (activeDayCount >= 2 ? 0.5 : 0.25)));
-  const repetition = Math.min(1, weightedSupport / Math.max(thresholds.minWeightedSupport, 3.4));
-  const confidence = round(
-    (repetition * 0.3) +
-    (themeCoverage * 0.2) +
-    (Math.min(1, markerCoverage) * 0.22) +
-    (Math.min(1, categoryCoverage) * 0.16) +
-    (evidenceDiversity * 0.12)
-  );
+  const distinctSourceCount = countDistinctSources(scoredRecords);
+  const concepts = topTerms(scoredRecords.flatMap((record) => record.concepts), 10);
+  const repeatedConcepts = repeatedTerms(scoredRecords.flatMap((record) => record.concepts), 2);
+  const cognitiveDimensions = unique(scoredRecords.flatMap((record) => record.cognitive_dimensions));
+  const matchedThemes = topTerms(scoredRecords.flatMap((record) => record.themes), 8);
+  const cohesion = round(averageCohesion(scoredRecords));
 
   if (
     support < thresholds.minSupport ||
     weightedSupport < thresholds.minWeightedSupport ||
-    !matchedThemes.length ||
-    !matchedMarkers.length ||
-    markerCategories.length < thresholds.minMarkerCategories ||
-    !requiredMarkerCategoriesPresent(rule, markerCategories)
+    cohesion < thresholds.minCohesion ||
+    !hasSchemaSubstance({ anchor, repeatedConcepts, cognitiveDimensions, distinctSourceCount })
   ) {
     return null;
   }
 
-  const state = resolveSchemaState({ support, weightedSupport, confidence, activeDayCount, distinctSourceCount }, thresholds);
   const evidenceRecords = scoredRecords.slice(0, 10).map((record) => ({
     id: record.id,
     packet_id: record.packet_id,
     source_label: record.source_label,
+    concepts: record.concepts,
     themes: record.themes,
-    matched_markers: record.matched_markers,
+    cognitive_dimensions: record.cognitive_dimensions,
     schema_record_score: record.schema_record_score,
     meaningful_score: record.meaningful_score,
     meaning_reasons: record.meaning_reasons,
     sources: record.sources,
   }));
+  const repetition = Math.min(1, support / Math.max(thresholds.minSupport, 8));
+  const sourceSpread = Math.min(1, distinctSourceCount / Math.max(2, Math.min(support, 4)));
+  const timeSpread = Math.min(1, activeDayCount / Math.max(2, Math.min(support, 4)));
+  const dimensionSpread = Math.min(1, cognitiveDimensions.length / 3);
+  const conceptSpread = Math.min(1, repeatedConcepts.length / 5);
+  const confidence = round(
+    (repetition * 0.24) +
+      (sourceSpread * 0.18) +
+      (timeSpread * 0.12) +
+      (cohesion * 0.18) +
+      (dimensionSpread * 0.16) +
+      (conceptSpread * 0.12)
+  );
+  const state = resolveSchemaState({ support, confidence, activeDayCount, distinctSourceCount }, thresholds);
+  const label = buildDynamicLabel(anchor, concepts, cognitiveDimensions);
+  const coreInterpretation = buildCoreInterpretation(concepts, cognitiveDimensions);
+  const actionTendency = buildActionTendency(concepts, cognitiveDimensions);
+  const emotionalSignature = buildEmotionalSignature(cognitiveDimensions, concepts);
 
   return {
-    id: rule.id,
-    label: rule.label,
-    summary: rule.summary,
+    id: `induced_${slug([anchor, ...concepts.slice(0, 3)].join("_"))}`,
+    label,
+    summary: `An induced virtual schema connecting ${concepts.slice(0, 5).join(", ")} across repeated meaningful activity.`,
     schema_kind: "virtual_cognitive_schema",
+    formation_mode: "evidence_induced",
     virtual: true,
     cognitive_schema: true,
-    core_interpretation: rule.core_interpretation,
-    action_tendency: rule.action_tendency,
-    emotional_signature: rule.emotional_signature,
+    core_interpretation: coreInterpretation,
+    action_tendency: actionTendency,
+    emotional_signature: emotionalSignature,
     state,
     state_label: stateLabel(state),
+    anchor_concept: anchor,
     matched_themes: matchedThemes,
-    matched_markers: matchedMarkers,
-    marker_categories: markerCategories,
+    matched_markers: concepts,
+    marker_categories: cognitiveDimensions,
     support,
     weighted_support: weightedSupport,
     distinct_source_count: distinctSourceCount,
     active_day_count: activeDayCount,
+    cohesion,
     confidence,
-    formation_basis: buildFormationBasis({ support, weightedSupport, distinctSourceCount, activeDayCount, matchedThemes, matchedMarkers, markerCategories }),
+    formation_basis: buildFormationBasis({
+      support,
+      weightedSupport,
+      distinctSourceCount,
+      activeDayCount,
+      concepts,
+      cognitiveDimensions,
+      cohesion,
+    }),
     formation_metrics: {
       support,
       weighted_support: weightedSupport,
       distinct_source_count: distinctSourceCount,
       active_day_count: activeDayCount,
-      theme_coverage: round(themeCoverage),
-      marker_coverage: round(Math.min(1, markerCoverage)),
-      marker_category_coverage: round(Math.min(1, categoryCoverage)),
+      cohesion,
+      repeated_concept_count: repeatedConcepts.length,
+      cognitive_dimension_count: cognitiveDimensions.length,
       confidence,
     },
     virtual_schema_packet: {
-      id: `schema_packet:${rule.id}`,
+      id: `schema_packet:induced_${slug([anchor, ...concepts.slice(0, 3)].join("_"))}`,
       type: "virtual_cognitive_schema_packet",
-      label: rule.label,
-      core_interpretation: rule.core_interpretation,
-      action_tendency: rule.action_tendency,
-      emotional_signature: rule.emotional_signature,
+      label,
+      formation_mode: "evidence_induced",
+      core_interpretation: coreInterpretation,
+      action_tendency: actionTendency,
+      emotional_signature: emotionalSignature,
       matched_themes: matchedThemes,
-      matched_markers: matchedMarkers,
-      marker_categories: markerCategories,
+      matched_markers: concepts,
+      marker_categories: cognitiveDimensions,
       support,
       weighted_support: weightedSupport,
+      cohesion,
       confidence,
       formation_metrics: {
         support,
         weighted_support: weightedSupport,
         distinct_source_count: distinctSourceCount,
         active_day_count: activeDayCount,
-        marker_categories: markerCategories,
+        cohesion,
+        cognitive_dimensions: cognitiveDimensions,
       },
       evidence_packet_ids: evidenceRecords.map((record) => record.packet_id || `packet:${record.id}`),
     },
     evidence_records: evidenceRecords,
     claim_type: "virtual_cognitive_schema_signal",
-    language_guardrail: "This is a virtual cognitive-schema signal from repeated evidence, not a diagnosis or causal certainty.",
+    language_guardrail: "This is an induced virtual cognitive-schema signal from repeated evidence, not a diagnosis or causal certainty.",
   };
 }
 
-function scoreRecordAgainstRule(record, rule) {
+function profileRecord(record) {
   const text = collectRecordText(record);
-  const themes = (record.canonical_themes ?? []).filter((theme) => rule.themes.includes(theme));
-  const markerMatch = findMarkerMatches(text, rule);
-  const matchedMarkers = markerMatch.markers;
-  const markerCategories = markerMatch.categories;
-  const themeScore = rule.themes.length ? themes.length / Math.min(rule.themes.length, 3) : 0;
-  const markerScore = rule.markers.length ? matchedMarkers.length / Math.min(rule.markers.length, 8) : 0;
-  const categoryScore = markerCategoryNames(rule).length ? markerCategories.length / markerCategoryNames(rule).length : 0;
-  const meaningfulScore = Number(record.meaningful_score ?? 0.58);
-  const sourceScore = Array.isArray(record.sources) && record.sources.length ? 0.08 : 0;
-  const rawScore = Math.min(
-    1,
-    (themeScore * 0.32) +
-      (Math.min(1, markerScore) * 0.34) +
-      (Math.min(1, categoryScore) * 0.16) +
-      (meaningfulScore * 0.12) +
-      sourceScore
-  );
-  const schemaRecordScore = round(matchedMarkers.length ? rawScore : Math.min(rawScore, 0.22));
-
+  const tokens = tokenize(text);
+  const themes = unique(record.canonical_themes ?? []);
+  const concepts = unique([
+    ...themes.map((theme) => normalize(theme).toLowerCase()),
+    ...tokens.filter((token) => !LOW_SIGNAL_TERMS.has(token)),
+    ...extractBigrams(tokens),
+  ]).slice(0, 40);
+  const cognitiveDimensions = detectCognitiveDimensions(text, concepts);
   return {
     id: record.id,
     packet_id: record.packet_id ?? null,
     source_label: normalize(record.source_label || record.evidence?.title || "meaning packet"),
     started_at: record.started_at,
     ended_at: record.ended_at,
+    concepts,
     themes,
-    matched_markers: matchedMarkers,
-    marker_categories: markerCategories,
-    schema_record_score: schemaRecordScore,
-    meaningful_score: meaningfulScore,
+    cognitive_dimensions: cognitiveDimensions,
+    meaningful_score: Number(record.meaningful_score ?? 0.58),
     meaning_reasons: record.meaning_reasons ?? [],
     sources: record.sources ?? [],
   };
 }
 
-function findMarkerMatches(text, rule) {
-  const groups = rule.marker_groups || { signal: rule.markers || [] };
-  const markers = new Set();
-  const categories = new Set();
-  Object.entries(groups).forEach(([category, terms]) => {
-    (terms || []).forEach((term) => {
-      if (hasPhrase(text, term)) {
-        markers.add(term);
-        categories.add(category);
-      }
-    });
-  });
-  (rule.markers || []).forEach((term) => {
-    if (hasPhrase(text, term)) {
-      markers.add(term);
-    }
-  });
+function scoreRecordForAnchor(record, anchor) {
+  const conceptSet = new Set(record.concepts);
+  if (!conceptSet.has(anchor)) {
+    return { ...record, schema_record_score: 0 };
+  }
+  const conceptDensity = Math.min(1, record.concepts.length / 12);
+  const dimensionScore = Math.min(1, record.cognitive_dimensions.length / 3);
+  const sourceScore = Array.isArray(record.sources) && record.sources.length ? 0.08 : 0;
+  const meaningfulScore = Number(record.meaningful_score ?? 0.58);
+  const score = round(
+    Math.min(1, 0.42 + (conceptDensity * 0.18) + (dimensionScore * 0.2) + (meaningfulScore * 0.12) + sourceScore)
+  );
   return {
-    markers: [...markers],
-    categories: [...categories],
+    ...record,
+    schema_record_score: score,
   };
 }
 
-function markerCategoryNames(rule) {
-  return Object.keys(rule.marker_groups || { signal: rule.markers || [] });
+function hasSchemaSubstance({ anchor, repeatedConcepts, cognitiveDimensions, distinctSourceCount }) {
+  const repeatedBeyondAnchor = repeatedConcepts.filter((term) => term !== anchor && !LOW_SIGNAL_TERMS.has(term));
+  return cognitiveDimensions.length > 0 || (repeatedBeyondAnchor.length >= 2 && distinctSourceCount >= 2);
 }
 
-function requiredMarkerCategoriesPresent(rule, categories) {
-  const required = Array.isArray(rule.required_marker_categories) ? rule.required_marker_categories : [];
-  if (!required.length) return true;
-  const categorySet = new Set(categories);
-  return required.every((category) => categorySet.has(category));
+function buildDynamicLabel(anchor, concepts, cognitiveDimensions) {
+  const labelConcepts = unique([anchor, ...concepts.filter((concept) => concept !== anchor)]).slice(0, 2);
+  const dimension = cognitiveDimensions[0] ? `${titleCase(cognitiveDimensions[0])} frame` : "Repeated frame";
+  return `${labelConcepts.map(titleCase).join(" / ")} ${dimension}`;
 }
 
-function hasPhrase(text, phrase) {
-  const haystack = normalize(text).toLowerCase();
-  const needle = normalize(phrase).toLowerCase();
-  if (!haystack || !needle) return false;
-  if (/^[a-z0-9]+$/.test(needle)) {
-    return new RegExp(`(^|[^a-z0-9])${escapeRegExp(needle)}([^a-z0-9]|$)`, "i").test(haystack);
+function buildCoreInterpretation(concepts, dimensions) {
+  const conceptText = concepts.slice(0, 4).map(titleCase).join(", ");
+  if (dimensions.length) {
+    return `Memact sees ${conceptText} repeatedly appearing through ${dimensions.join(", ")} signals.`;
   }
-  return haystack.includes(needle);
+  return `Memact sees ${conceptText} repeatedly appearing together across meaningful activity.`;
 }
 
-function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function buildActionTendency(concepts, dimensions) {
+  if (dimensions.includes("action")) {
+    return `move toward activity around ${concepts.slice(0, 3).join(", ")}`;
+  }
+  if (dimensions.includes("evaluation")) {
+    return `judge or compare activity around ${concepts.slice(0, 3).join(", ")}`;
+  }
+  if (dimensions.includes("identity")) {
+    return `connect ${concepts.slice(0, 3).join(", ")} to self-direction`;
+  }
+  return `revisit and connect ${concepts.slice(0, 3).join(", ")}`;
+}
+
+function buildEmotionalSignature(dimensions, concepts) {
+  const output = [];
+  if (dimensions.includes("affect")) output.push("emotion-linked");
+  if (dimensions.includes("evaluation")) output.push("evaluation pressure");
+  if (dimensions.includes("identity")) output.push("identity relevance");
+  if (dimensions.includes("social")) output.push("social visibility");
+  if (!output.length && concepts.length) output.push("repeated salience");
+  return output;
+}
+
+function countAnchors(records) {
+  const counts = new Map();
+  records.forEach((record) => {
+    unique(record.concepts).forEach((concept) => {
+      counts.set(concept, (counts.get(concept) || 0) + 1);
+    });
+  });
+  return counts;
+}
+
+function averageCohesion(records) {
+  if (records.length <= 1) return 1;
+  let total = 0;
+  let pairs = 0;
+  for (let i = 0; i < records.length; i += 1) {
+    for (let j = i + 1; j < records.length; j += 1) {
+      total += jaccard(records[i].concepts, records[j].concepts);
+      pairs += 1;
+    }
+  }
+  return pairs ? total / pairs : 0;
+}
+
+function jaccard(left, right) {
+  const leftSet = new Set(left);
+  const rightSet = new Set(right);
+  const union = new Set([...leftSet, ...rightSet]);
+  if (!union.size) return 0;
+  let intersection = 0;
+  leftSet.forEach((value) => {
+    if (rightSet.has(value)) intersection += 1;
+  });
+  return intersection / union.size;
+}
+
+function dedupeSchemas(candidates) {
+  const accepted = [];
+  for (const candidate of candidates) {
+    const duplicate = accepted.some((schema) => jaccard(schema.matched_markers, candidate.matched_markers) >= 0.72);
+    if (!duplicate) accepted.push(candidate);
+  }
+  return accepted;
 }
 
 function buildSchemaNetwork(schemas) {
@@ -443,30 +507,21 @@ function buildSchemaNetwork(schemas) {
       id: schemaId,
       type: "virtual_cognitive_schema",
       label: schema.label,
+      formation_mode: schema.formation_mode,
       state: schema.state,
       confidence: schema.confidence,
     });
 
-    (schema.matched_themes ?? []).forEach((theme) => {
-      const themeId = `theme:${theme}`;
-      addNode({ id: themeId, type: "theme", label: theme });
-      edges.push({
-        from: schemaId,
-        to: themeId,
-        type: "built_from_theme",
-        weight: Number(schema.weighted_support || schema.support || 1),
-      });
+    (schema.matched_markers ?? []).forEach((concept) => {
+      const conceptId = `concept:${slug(concept)}`;
+      addNode({ id: conceptId, type: "concept", label: concept });
+      edges.push({ from: schemaId, to: conceptId, type: "contains_concept", weight: 1 });
     });
 
-    (schema.matched_markers ?? []).forEach((marker) => {
-      const markerId = `marker:${slug(marker)}`;
-      addNode({ id: markerId, type: "schema_marker", label: marker });
-      edges.push({
-        from: schemaId,
-        to: markerId,
-        type: "has_cognitive_marker",
-        weight: 1,
-      });
+    (schema.marker_categories ?? []).forEach((dimension) => {
+      const dimensionId = `dimension:${slug(dimension)}`;
+      addNode({ id: dimensionId, type: "cognitive_dimension", label: dimension });
+      edges.push({ from: schemaId, to: dimensionId, type: "has_cognitive_dimension", weight: 1 });
     });
 
     (schema.evidence_records ?? []).forEach((record) => {
@@ -489,34 +544,60 @@ function buildSchemaNetwork(schemas) {
   return { nodes, edges };
 }
 
+function detectCognitiveDimensions(text, concepts) {
+  const haystack = `${normalize(text).toLowerCase()} ${concepts.join(" ")}`;
+  return Object.entries(COGNITIVE_DIMENSIONS)
+    .filter(([, terms]) => terms.some((term) => hasPhrase(haystack, term)))
+    .map(([dimension]) => dimension);
+}
+
 function collectRecordText(record) {
   const parts = [
     record.source_label,
     record.evidence?.title,
     record.evidence?.text_excerpt,
     ...(record.canonical_themes ?? []),
-    ...(record.meaning_reasons ?? []),
   ];
   (record.themes ?? []).forEach((theme) => {
     parts.push(theme.label, ...(theme.evidence_terms ?? []));
   });
-  (record.sources ?? []).forEach((source) => {
-    parts.push(source.title, source.domain, source.url);
-  });
   return parts.filter(Boolean).join(" ");
+}
+
+function extractBigrams(tokens) {
+  const bigrams = [];
+  for (let index = 0; index < tokens.length - 1; index += 1) {
+    const left = tokens[index];
+    const right = tokens[index + 1];
+    if (LOW_SIGNAL_TERMS.has(left) || LOW_SIGNAL_TERMS.has(right)) continue;
+    bigrams.push(`${left} ${right}`);
+  }
+  return bigrams;
+}
+
+function tokenize(value) {
+  return normalize(value)
+    .toLowerCase()
+    .replace(/https?:\/\/\S+/g, " ")
+    .replace(/[^a-z0-9+#./-]+/g, " ")
+    .split(/\s+/)
+    .map((token) => token.replace(/^www\./, "").replace(/\.(com|org|net|io|ai)$/i, ""))
+    .filter((token) => token.length >= 3)
+    .filter((token) => !STOP_WORDS.has(token))
+    .filter((token) => !/^\d+$/.test(token));
 }
 
 function resolveSchemaState(metrics, thresholds) {
   if (
     metrics.support >= Math.max(thresholds.minSupport * 3, 8) &&
-    metrics.confidence >= 0.72 &&
+    metrics.confidence >= 0.7 &&
     metrics.activeDayCount >= 2
   ) {
     return "stable";
   }
   if (
     metrics.support >= Math.max(thresholds.minSupport * 2, 5) ||
-    (metrics.confidence >= 0.58 && metrics.distinctSourceCount >= 2)
+    (metrics.confidence >= 0.56 && metrics.distinctSourceCount >= 2)
   ) {
     return "reinforced";
   }
@@ -531,21 +612,21 @@ function stateLabel(state) {
       : "Emerging virtual schema";
 }
 
-function buildFormationBasis({ support, weightedSupport, distinctSourceCount, activeDayCount, matchedThemes, matchedMarkers, markerCategories }) {
+function buildFormationBasis({ support, weightedSupport, distinctSourceCount, activeDayCount, concepts, cognitiveDimensions, cohesion }) {
   return [
     `${support} supporting meaning packets`,
     `${weightedSupport.toFixed(2)} weighted support`,
     `${distinctSourceCount} distinct source${distinctSourceCount === 1 ? "" : "s"}`,
     `${activeDayCount} active day${activeDayCount === 1 ? "" : "s"}`,
-    `themes: ${matchedThemes.join(", ")}`,
-    `marker groups: ${markerCategories.join(", ")}`,
-    `markers: ${matchedMarkers.slice(0, 6).join(", ")}`,
+    `cohesion ${cohesion.toFixed(2)}`,
+    `concepts: ${concepts.slice(0, 6).join(", ")}`,
+    `dimensions: ${cognitiveDimensions.join(", ") || "concept-only"}`,
   ].join("; ");
 }
 
 function countThemes(records) {
   return records.reduce((counts, record) => {
-    (record.canonical_themes ?? []).forEach((theme) => {
+    (record.themes ?? []).forEach((theme) => {
       counts[theme] = (counts[theme] ?? 0) + 1;
     });
     return counts;
@@ -575,6 +656,41 @@ function countActiveDays(records) {
   return days.size || (records.length ? 1 : 0);
 }
 
+function repeatedTerms(values, minCount) {
+  return topTerms(values, 100).filter((term) => countValues(values).get(term) >= minCount);
+}
+
+function topTerms(values, limit = 8) {
+  return [...countValues(values).entries()]
+    .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
+    .slice(0, limit)
+    .map(([term]) => term);
+}
+
+function countValues(values) {
+  const counts = new Map();
+  (Array.isArray(values) ? values : []).forEach((value) => {
+    const key = normalize(value).toLowerCase();
+    if (!key || LOW_SIGNAL_TERMS.has(key)) return;
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+  return counts;
+}
+
+function hasPhrase(text, phrase) {
+  const haystack = normalize(text).toLowerCase();
+  const needle = normalize(phrase).toLowerCase();
+  if (!haystack || !needle) return false;
+  if (/^[a-z0-9]+$/.test(needle)) {
+    return new RegExp(`(^|[^a-z0-9])${escapeRegExp(needle)}([^a-z0-9]|$)`, "i").test(haystack);
+  }
+  return haystack.includes(needle);
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function normalize(value) {
   return String(value || "").replace(/\s+/g, " ").trim();
 }
@@ -587,9 +703,15 @@ function round(value) {
   return Math.round((Number(value || 0) + Number.EPSILON) * 10000) / 10000;
 }
 
+function titleCase(value) {
+  return normalize(value)
+    .replace(/[_-]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
 function slug(value) {
   return normalize(value)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "marker";
+    .replace(/^-+|-+$/g, "") || "schema";
 }

@@ -8,7 +8,7 @@ It answers:
 
 `What virtual cognitive schema may be forming from meaningful activity?`
 
-Activities are not schemas. Activities are evidence. Schema forms virtual cognitive-schema packets from repeated meaningful activity, cognitive markers, sources, and time. This is the core Memact mirror.
+Activities are not schemas. Activities are evidence. Schema forms virtual cognitive-schema packets from repeated meaningful activity, co-occurring concepts, cognitive dimensions, sources, and time. This is the core Memact mirror.
 
 ## Pipeline Position
 
@@ -25,8 +25,9 @@ Schema is the main surface for Memact's answer engine. Origin and Influence are 
 - reads `memact.inference.v0` records
 - ignores records that did not pass the Inference meaningfulness gate
 - requires repeated meaningful packets
-- requires cognitive markers, not only topic matches
-- detects virtual cognitive-schema signals once support thresholds are met
+- induces schema candidates from recurring concepts instead of selecting from fixed labels
+- requires evidence substance, not only topic matches
+- detects virtual cognitive-schema signals once support, cohesion, source, and time thresholds are met
 - keeps evidence records attached to every schema signal
 - emits a schema network linking virtual schemas to markers, themes, and meaning packets
 - supports answers with cautious context, not diagnosis
@@ -39,9 +40,11 @@ Schema is the main surface for Memact's answer engine. Origin and Influence are 
   "schema_version": "memact.schema.v0",
   "schemas": [
     {
-      "id": "builder_agency",
-      "label": "Builder / agency schema",
+      "id": "induced_startup_proof_building",
+      "label": "Startup / Proof Action frame",
+      "formation_mode": "evidence_induced",
       "matched_themes": ["startup", "coding"],
+      "matched_markers": ["startup", "proof", "building", "launch"],
       "support": 4,
       "confidence": 0.725,
       "evidence_records": [
@@ -51,9 +54,9 @@ Schema is the main surface for Memact's answer engine. Origin and Influence are 
         }
       ],
       "schema_kind": "virtual_cognitive_schema",
-      "core_interpretation": "Progress feels real when it becomes built, shipped, or visible.",
-      "action_tendency": "move toward building, debugging, launching, proving, or showing work",
-      "marker_categories": ["interpretation", "action"],
+      "core_interpretation": "Memact sees Startup, Proof, Building, and Launch repeatedly appearing through action signals.",
+      "action_tendency": "move toward activity around startup, proof, and building",
+      "marker_categories": ["action", "identity"],
       "claim_type": "virtual_cognitive_schema_signal",
       "language_guardrail": "This is a virtual cognitive-schema signal from repeated evidence, not a diagnosis or causal certainty."
     }
@@ -107,7 +110,8 @@ npm run schema -- --input ..\inference-output.json --format json
 - virtual schemas require repetition
 - virtual schemas are built from meaningful packets only
 - theme matches alone must not form schemas
-- cognitive markers must be present across more than one marker group
+- schemas are induced from evidence; hard-coded domain taxonomies are not the core engine
+- broad cognitive dimensions can help scoring, but evidence clusters decide the schema
 - schema language must stay cautious
 - no diagnosis, no causal certainty, no personality claims
 - every schema signal must cite evidence records
