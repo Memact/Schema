@@ -13,12 +13,14 @@ Activities are not schemas. Activities are evidence. Schema forms virtual cognit
 ## Pipeline Position
 
 ```text
-Capture -> Inference -> Schema -> Interface / Query -> Influence / Origin
+Capture -> Inference -> Schema -> Memory -> Interface / Query -> Influence / Origin
 ```
 
 Schema consumes retained Inference packets. It does not read Capture internals and does not claim causality.
 
 Schema is the main surface for Memact's answer engine. Origin and Influence are useful, but they support the schema mirror instead of replacing it.
+
+Schema does not store long-term memory itself. It emits virtual cognitive-schema packets. Memory decides whether those packets survive, exposes CRUD over them, and builds RAG context for Website/API answers.
 
 ## What It Does
 
