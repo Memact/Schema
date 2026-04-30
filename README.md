@@ -2,40 +2,35 @@
 
 Version: `v0.0`
 
-Schema is the deterministic cognitive-schema layer in the Memact architecture.
+Schema forms virtual cognitive-schema packets from retained evidence.
 
-It answers:
-
-`What virtual cognitive schema may be forming from meaningful activity?`
-
-Activities are not schemas. Activities are evidence. Schema forms virtual cognitive-schema packets from repeated meaningful activity, co-occurring concepts, cognitive dimensions, sources, and time. This is the core Memact mirror.
-
-## Pipeline Position
+It owns one job:
 
 ```text
-Capture -> Inference -> Schema -> Memory -> Interface / Query -> Influence / Origin
+detect repeated frames in meaningful activity
 ```
 
-Schema consumes retained Inference packets. It does not read Capture internals and does not claim causality.
+Schema does not capture browser data, store long-term memory, or diagnose the user. It emits cautious schema signals that Memory can store and update.
 
-Schema is the main surface for Memact's answer engine. Origin and Influence are useful, but they support the schema mirror instead of replacing it.
+## What This Repo Owns
 
-Schema does not store long-term memory itself. It emits virtual cognitive-schema packets. Memory decides whether those packets survive, exposes CRUD over them, and builds RAG context for Website/API answers.
+- Reads `memact.inference.v0` records.
+- Ignores records that did not pass the meaningfulness gate.
+- Groups repeated concepts, markers, sources, and time patterns.
+- Forms virtual cognitive-schema packets when support and cohesion are strong enough.
+- Keeps evidence records attached to every schema.
+- Emits a schema network for Memory and query-time engines.
 
-## What It Does
+## Input
 
-- reads `memact.inference.v0` records
-- ignores records that did not pass the Inference meaningfulness gate
-- requires repeated meaningful packets
-- induces schema candidates from recurring concepts instead of selecting from fixed labels
-- requires evidence substance, not only topic matches
-- detects virtual cognitive-schema signals once support, cohesion, source, and time thresholds are met
-- keeps evidence records attached to every schema signal
-- emits a schema network linking virtual schemas to markers, themes, and meaning packets
-- supports answers with cautious context, not diagnosis
-- uses guarded language suitable for sensitive self-understanding
+```json
+{
+  "schema_version": "memact.inference.v0",
+  "records": []
+}
+```
 
-## Public Output Contract
+## Output
 
 ```json
 {
@@ -45,22 +40,10 @@ Schema does not store long-term memory itself. It emits virtual cognitive-schema
       "id": "induced_startup_proof_building",
       "label": "Startup / Proof Action frame",
       "formation_mode": "evidence_induced",
-      "matched_themes": ["startup", "coding"],
-      "matched_markers": ["startup", "proof", "building", "launch"],
       "support": 4,
-      "confidence": 0.725,
-      "evidence_records": [
-        {
-          "packet_id": "packet:act_1",
-          "meaningful_score": 0.64
-        }
-      ],
+      "confidence": 0.72,
       "schema_kind": "virtual_cognitive_schema",
-      "core_interpretation": "Memact sees Startup, Proof, Building, and Launch repeatedly appearing through action signals.",
-      "action_tendency": "move toward activity around startup, proof, and building",
-      "marker_categories": ["action", "identity"],
-      "claim_type": "virtual_cognitive_schema_signal",
-      "language_guardrail": "This is a virtual cognitive-schema signal from repeated evidence, not a diagnosis or causal certainty."
+      "evidence_records": []
     }
   ],
   "schema_network": {
@@ -70,7 +53,7 @@ Schema does not store long-term memory itself. It emits virtual cognitive-schema
 }
 ```
 
-## Terminal Quickstart
+## Run Locally
 
 Prerequisites:
 
@@ -83,40 +66,36 @@ Install:
 npm install
 ```
 
-Run validation:
+Validate:
 
 ```powershell
 npm run check
 ```
 
-Run the sample:
+Run sample:
 
 ```powershell
 npm run sample
 ```
 
-Analyze Inference output:
+Run against Inference output:
 
 ```powershell
-npm run schema -- --input ..\inference-output.json --format report
+npm run schema -- --input path\to\inference-output.json --format report
 ```
 
-Emit JSON for Interface / Query, Influence, and Origin:
+JSON output:
 
 ```powershell
-npm run schema -- --input ..\inference-output.json --format json
+npm run schema -- --input path\to\inference-output.json --format json
 ```
 
-## Design Rules
+## Contract
 
-- virtual schemas require repetition
-- virtual schemas are built from meaningful packets only
-- theme matches alone must not form schemas
-- schemas are induced from evidence; hard-coded domain taxonomies are not the core engine
-- broad cognitive dimensions can help scoring, but evidence clusters decide the schema
-- schema language must stay cautious
-- no diagnosis, no causal certainty, no personality claims
-- every schema signal must cite evidence records
+- Activities are evidence, not schemas.
+- Schemas require repeated meaningful support.
+- A schema packet is a virtual mirror, not a medical claim.
+- Memory decides whether a schema survives.
 
 ## License
 
