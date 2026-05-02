@@ -8,6 +8,7 @@
   "main": "./src/engine.mjs",
   "exports": {
     ".": "./src/engine.mjs",
+    "./lifecycle": "./src/lifecycle.mjs",
     "./cli": "./src/cli.mjs"
   },
   "keywords": [

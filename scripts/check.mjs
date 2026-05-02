@@ -1,5 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { detectSchemas } from "../src/engine.mjs";
+import {
+  SCHEMA_LIFECYCLE_STATES,
+  transitionSchemaLifecycle,
+} from "../src/lifecycle.mjs";
 
 const inferenceOutput = JSON.parse(await readFile(new URL("../examples/sample-inference-output.json", import.meta.url), "utf8"));
 const result = detectSchemas(inferenceOutput);
@@ -12,8 +16,11 @@ if (!result.schemas.every((schema) => schema.formation_mode === "evidence_induce
   throw new Error("Expected induced schemas, not fixed taxonomy schemas.");
 }
 
-if (!result.schemas.every((schema) => ["emerging", "reinforced", "stable"].includes(schema.state))) {
+if (!result.schemas.every((schema) => Object.values(SCHEMA_LIFECYCLE_STATES).includes(schema.state))) {
   throw new Error("Expected schema state labels to be assigned.");
+}
+if (!result.schemas.every((schema) => schema.lifecycle_state === schema.state && schema.state_label)) {
+  throw new Error("Expected schemas to expose lifecycle state and label.");
 }
 
 const builderFixture = {
@@ -66,6 +73,23 @@ const noisyFixture = {
 const noisyResult = detectSchemas(noisyFixture);
 if (noisyResult.schemas.length) {
   throw new Error("Theme-only navigation noise should not form a schema.");
+}
+
+const confirmedSchema = transitionSchemaLifecycle(builderSchema, {
+  action: "confirm",
+  reason: "user confirmed this schema",
+  occurred_at: "2026-05-02T10:00:00Z",
+});
+if (confirmedSchema.lifecycle_state !== SCHEMA_LIFECYCLE_STATES.USER_CONFIRMED) {
+  throw new Error("Expected user feedback to transition schema lifecycle state.");
+}
+
+const contradictedSchema = transitionSchemaLifecycle(builderSchema, {
+  action: "contradict",
+  reason: "opposing evidence arrived",
+});
+if (contradictedSchema.state !== SCHEMA_LIFECYCLE_STATES.CONTRADICTED) {
+  throw new Error("Expected contradiction to transition schema lifecycle state.");
 }
 
 console.log("Schema check passed.");

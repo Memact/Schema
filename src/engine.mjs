@@ -1,3 +1,5 @@
+import { resolveSchemaLifecycleState, schemaLifecycleLabel } from "./lifecycle.mjs";
+
 const DEFAULT_MIN_SUPPORT = 3;
 const DEFAULT_MIN_MEANINGFUL_SCORE = 0.38;
 const DEFAULT_MIN_WEIGHTED_SUPPORT = 1.15;
@@ -283,7 +285,7 @@ function buildCandidate(anchor, records, thresholds) {
       (dimensionSpread * 0.16) +
       (conceptSpread * 0.12)
   );
-  const state = resolveSchemaState({ support, confidence, activeDayCount, distinctSourceCount }, thresholds);
+  const state = resolveSchemaLifecycleState({ support, confidence, activeDayCount, distinctSourceCount }, thresholds);
   const label = buildDynamicLabel(anchor, concepts, cognitiveDimensions);
   const coreInterpretation = buildCoreInterpretation(concepts, cognitiveDimensions);
   const actionTendency = buildActionTendency(concepts, cognitiveDimensions);
@@ -301,7 +303,8 @@ function buildCandidate(anchor, records, thresholds) {
     action_tendency: actionTendency,
     emotional_signature: emotionalSignature,
     state,
-    state_label: stateLabel(state),
+    lifecycle_state: state,
+    state_label: schemaLifecycleLabel(state),
     anchor_concept: anchor,
     matched_themes: matchedThemes,
     matched_markers: concepts,
@@ -336,6 +339,7 @@ function buildCandidate(anchor, records, thresholds) {
       type: "virtual_cognitive_schema_packet",
       label,
       formation_mode: "evidence_induced",
+      lifecycle_state: state,
       core_interpretation: coreInterpretation,
       action_tendency: actionTendency,
       emotional_signature: emotionalSignature,
@@ -509,6 +513,7 @@ function buildSchemaNetwork(schemas) {
       label: schema.label,
       formation_mode: schema.formation_mode,
       state: schema.state,
+      lifecycle_state: schema.lifecycle_state || schema.state,
       confidence: schema.confidence,
     });
 
