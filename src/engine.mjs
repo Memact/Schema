@@ -190,6 +190,67 @@ export function detectSchemas(inferenceOutput, options = {}) {
   };
 }
 
+export function formSchemaPackets(records = [], options = {}) {
+  const groups = groupByCategory(records)
+  return Object.values(groups)
+    .map((group) => createSchemaPacket(group, options))
+    .filter((packet) => packet.confidence >= Number(options.minConfidence ?? 0.2))
+}
+
+export function groupByCategory(records = []) {
+  return (Array.isArray(records) ? records : []).reduce((groups, record) => {
+    const category = record.category || record.evidence?.category || inferRecordCategory(record)
+    groups[category] ||= []
+    groups[category].push(record)
+    return groups
+  }, {})
+}
+
+export function inferSchemaType(record = {}) {
+  const themes = Array.isArray(record.canonical_themes) ? record.canonical_themes : []
+  const text = `${record.category || ""} ${themes.join(" ")} ${record.evidence?.title || ""}`.toLowerCase()
+  if (/shop|commerce|product/.test(text)) return "shopping"
+  if (/learn|study|tutorial|course/.test(text)) return "learning"
+  if (/research|paper|source|documentation|api/.test(text)) return "research"
+  if (/focus|attention|load/.test(text)) return "attention"
+  if (/video|audio|media/.test(text)) return "media"
+  if (/code|developer|debug|github/.test(text)) return "developer_work"
+  if (/assistant|chat/.test(text)) return "ai_assistant_usage"
+  if (/task|work|doc/.test(text)) return "productivity"
+  if (/prefer|like|choice/.test(text)) return "preferences"
+  return "context"
+}
+
+export function createSchemaPacket(group = [], options = {}) {
+  const records = Array.isArray(group) ? group : []
+  const category = records[0]?.category || records[0]?.evidence?.category || inferRecordCategory(records[0])
+  const schemaType = options.schemaType || inferSchemaType(records[0] || {})
+  const confidence = round(records.reduce((sum, record) => sum + Number(record.meaningful_score || 0.5), 0) / Math.max(1, records.length))
+  return {
+    schema_version: "memact.schema_packet.v0",
+    packet_id: `schema_${slug(`${category}_${schemaType}_${records.length}`)}`,
+    category,
+    schema_type: schemaType,
+    sub_schema: inferSubSchema(records),
+    confidence,
+    attributes: {
+      record_count: records.length,
+      themes: unique(records.flatMap((record) => record.canonical_themes || []))
+    },
+    sources: records.flatMap((record) => record.sources || []),
+    created_at: new Date().toISOString()
+  }
+}
+
+function inferSubSchema(records = []) {
+  const text = records.map((record) => `${record.source_label || ""} ${record.evidence?.title || ""} ${(record.canonical_themes || []).join(" ")}`).join(" ").toLowerCase()
+  if (/discount|coupon|sale|price|deal/.test(text)) return "discount"
+  if (/source|citation|reference/.test(text)) return "sources"
+  if (/task|todo|deadline/.test(text)) return "tasks"
+  if (/focus|interrupt|overload/.test(text)) return "attention_load"
+  return "general"
+}
+
 export function formatSchemaReport(result) {
   const lines = [
     "Memact Schema Report",
@@ -403,6 +464,20 @@ function profileRecord(record) {
     meaning_reasons: record.meaning_reasons ?? [],
     sources: record.sources ?? [],
   };
+}
+
+function inferRecordCategory(record = {}) {
+  const text = `${record.category || ""} ${record.source_label || ""} ${record.evidence?.title || ""} ${(record.canonical_themes || []).join(" ")}`.toLowerCase()
+  if (/shop|commerce|product|discount|price/.test(text)) return "shopping"
+  if (/learn|study|tutorial|course/.test(text)) return "learning"
+  if (/research|paper|source|documentation|api/.test(text)) return "research"
+  if (/focus|attention|load/.test(text)) return "attention"
+  if (/video|audio|media/.test(text)) return "media"
+  if (/code|developer|debug|github/.test(text)) return "developer_work"
+  if (/assistant|chat/.test(text)) return "ai_assistant_usage"
+  if (/task|work|doc/.test(text)) return "productivity"
+  if (/prefer|like|choice/.test(text)) return "preferences"
+  return "general"
 }
 
 function scoreRecordForAnchor(record, anchor) {
