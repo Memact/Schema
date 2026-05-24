@@ -1,19 +1,5 @@
-Business Source License 1.1
+Apache License
+Version 2.0, January 2004
+http://www.apache.org/licenses/
 
-Licensor: Memact
-Licensed Work: Memact Schema
-Copyright (c) 2026 Memact
-
-This repository is source-available under BUSL-1.1.
-
-Additional Use Grant:
-You may use, copy, modify, and run the Licensed Work for personal, educational, research, internal evaluation, and non-production development purposes.
-
-You may not offer the Licensed Work, modified versions, or substantially similar functionality as a hosted, managed, commercial, or competing service to third parties without prior written permission from Memact.
-
-Change Date: 2030-05-17
-Change License: Apache License, Version 2.0
-
-Brand restriction: this license covers source code only. Memact names, logos, wordmarks, icons, artwork, screenshots, trade dress, domain names, and other brand assets are excluded and require prior written permission, except for factual references permitted by law.
-
-THE LICENSED WORK IS PROVIDED AS IS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND.
+Licensed under the Apache License, Version 2.0.
