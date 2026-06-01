@@ -26,6 +26,34 @@ jobs:
             const ACTIVE_DIFFICULTY_LABELS = ['Easy', 'Medium', 'Hard'];
             const MANAGED_LABELS = [ACTIVE_PROGRAM_LABEL, ...ACTIVE_DIFFICULTY_LABELS];
 
+            const removeManagedLabels = async (labelsToKeep = new Set()) => {
+              const { data: currentPr } = await github.rest.issues.get({
+                owner,
+                repo,
+                issue_number: prNumber,
+              });
+
+              const currentLabels = currentPr.labels.map((label) =>
+                typeof label === 'string' ? label : label.name
+              );
+              const currentLabelNames = new Set(currentLabels.map((label) => label.toLowerCase()));
+
+              const managedLabelsToRemove = MANAGED_LABELS.filter((label) =>
+                currentLabelNames.has(label.toLowerCase()) && !labelsToKeep.has(label)
+              );
+
+              for (const label of managedLabelsToRemove) {
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo,
+                  issue_number: prNumber,
+                  name: label,
+                });
+              }
+
+              return currentLabelNames;
+            };
+
             const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             const ownerPattern = escapeRegExp(owner);
             const repoPattern = escapeRegExp(repo);
@@ -44,7 +72,8 @@ jobs:
             }
 
             if (issueNumbers.size === 0) {
-              core.info('No resolved issue references found in the PR title or body.');
+              await removeManagedLabels();
+              core.info('No resolved issue references found. Removed stale managed labels from the PR.');
               return;
             }
 
@@ -90,28 +119,7 @@ jobs:
               }
             }
 
-            const { data: currentPr } = await github.rest.issues.get({
-              owner,
-              repo,
-              issue_number: prNumber,
-            });
-            const currentLabels = currentPr.labels.map((label) =>
-              typeof label === 'string' ? label : label.name
-            );
-            const currentLabelNames = new Set(currentLabels.map((label) => label.toLowerCase()));
-
-            const managedLabelsToRemove = MANAGED_LABELS.filter((label) =>
-              currentLabelNames.has(label.toLowerCase()) && !labelsToAdd.has(label)
-            );
-
-            for (const label of managedLabelsToRemove) {
-              await github.rest.issues.removeLabel({
-                owner,
-                repo,
-                issue_number: prNumber,
-                name: label,
-              });
-            }
+            const currentLabelNames = await removeManagedLabels(labelsToAdd);
 
             const missingLabels = [...labelsToAdd].filter(
               (label) => !currentLabelNames.has(label.toLowerCase())
