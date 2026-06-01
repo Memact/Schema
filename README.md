@@ -8,6 +8,14 @@ Apps may already have clean context, like `prefers short workouts` or `likes hig
 
 Schema does not pretend every activity record is already context. It defines the category, fields, examples, and rules that help Memact turn activity into a user-readable context proposal later.
 
+## Core philosophy
+
+Activity is not identity.
+
+A click, order, read, skip, replay, search, or export can be useful evidence. It is not automatically a stable fact about the user.
+
+A good schema should make that difference obvious. Repeated patterns can support a proposed context entry. One-off activity, curiosity, research, shared usage, trending events, and temporary needs should stay weak, temporary, or low-confidence.
+
 ## For SSoC26 Contributors
 
 Start here if you are new to Memact.
@@ -27,6 +35,8 @@ Good first issues are labeled:
 - `schema`
 
 Please comment on an issue before starting so work does not get duplicated.
+
+To claim an unassigned SSoC26 issue, comment `/claim`. The auto-assign workflow only claims open `Easy` or `Medium` SSoC26 issues that are not already assigned.
 
 A good category schema contribution should include:
 

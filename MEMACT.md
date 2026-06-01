@@ -51,6 +51,14 @@ That edited user version is stronger than the app guess.
 
 Important: Schema is not the full inference system. It defines categories, examples, fields, and safe rules. The deeper system that turns many kinds of app activity into context can be built on top of this later.
 
+## Core rule
+
+Activity is not identity.
+
+A person reading one article, ordering one meal, skipping one song, searching one topic, or exporting one file does not mean Memact should turn that into a permanent fact about them.
+
+Patterns matter. User edits matter more. One-off activity should stay weak, temporary, or low-confidence unless the user chooses to keep it.
+
 ## What contributors do in Schema
 
 Schema is the main beginner-friendly contribution path.
@@ -124,6 +132,7 @@ I prefer productivity content in the evening, especially short practical videos.
 ## Rules
 
 - Apps can send proposed context or app activity records.
+- Activity is not identity.
 - Users control what becomes memory.
 - Default visibility should be private.
 - Apps should not get full Wiki access.
