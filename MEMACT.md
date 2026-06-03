@@ -24,9 +24,11 @@ User replayed Brazilian phonk playlists 18 times this month and skipped slow aco
 
 Those are not the same thing.
 
-Schema mainly categorizes user context. It also defines how activity from a category should be understood before Memact turns it into a context proposal.
+Context mainly categorizes user context. It also defines how activity from a category should be understood before Memact turns it into a context proposal.
 
-For the music example, Schema can say:
+This repo was formerly called Schema. If an older issue or PR says "Schema," it means this Context repo.
+
+For the music example, Context can say:
 
 ```text
 category: music
@@ -49,7 +51,7 @@ I like Brazilian phonk mostly while working out.
 
 That edited user version is stronger than the app guess.
 
-Important: Schema is not the full inference system. It defines categories, examples, fields, and safe rules. The deeper system that turns many kinds of app activity into context can be built on top of this later.
+Important: Context is not a surveillance or inference free-for-all. It defines categories, examples, fields, and safe rules so raw signals can become user-reviewable context proposals later.
 
 ## Core rule
 
@@ -59,9 +61,9 @@ A person reading one article, ordering one meal, skipping one song, searching on
 
 Patterns matter. User edits matter more. One-off activity should stay weak, temporary, or low-confidence unless the user chooses to keep it.
 
-## What contributors do in Schema
+## What contributors do in Context
 
-Schema is the main beginner-friendly contribution path.
+Context is the main beginner-friendly contribution path.
 
 You pick an app category and define what useful context looks like there.
 
@@ -90,9 +92,9 @@ For each category, add:
 
 Do not build random features. Keep the PR focused on one category.
 
-## What a good schema should do
+## What a good category should do
 
-A good schema should make it clear what Memact is allowed to understand from an app.
+A good category should make it clear what Memact is allowed to understand from an app.
 
 It should separate:
 
@@ -123,7 +125,7 @@ I prefer productivity content in the evening, especially short practical videos.
 
 - Access handles consent, apps, API keys, scopes, and permissions.
 - Wiki is where users add, edit, approve, reject, delete, and share context.
-- Schema defines app category schemas.
+- Context defines app category rules and proposal templates.
 - Memory stores accepted context, history, retrieval, and app-safe summaries.
 - Contracts defines shared shapes and validators.
 - SDK helps apps connect to Memact.
@@ -152,7 +154,8 @@ Start with an issue labeled:
 - `SSoC26`
 - `Easy`
 - `good first issue`
-- `schema`
+- `context`
+- `schema` for older issues that have not been renamed yet
 
 Comment before starting so work does not get duplicated.
 

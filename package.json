@@ -1,8 +1,8 @@
 {
-  "name": "memact-schema",
+  "name": "memact-context",
   "private": true,
   "version": "0.0.0",
-  "description": "Schema packet layer for organizing approved user-context signals into reusable personalization context.",
+  "description": "Context category layer for turning app signals into user-readable Memact context proposals.",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./src/engine.mjs",
@@ -13,7 +13,8 @@
   },
   "keywords": [
     "memact",
-    "schema",
+    "context",
+    "category-context",
     "schema-packets",
     "context",
     "deterministic",
@@ -22,18 +23,20 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Memact/Schema.git"
+    "url": "https://github.com/Memact/Context.git"
   },
-  "homepage": "https://github.com/Memact/Schema",
+  "homepage": "https://github.com/Memact/Context",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "bin": {
+    "memact-context": "./src/cli.mjs",
     "memact-schema": "./src/cli.mjs"
   },
   "scripts": {
     "check": "node ./scripts/check.mjs",
     "test": "node test/schema-packets.test.mjs && node test/news-articles.test.mjs",
+    "context": "node ./src/cli.mjs",
     "schema": "node ./src/cli.mjs",
     "sample": "node ./src/cli.mjs --input examples/sample-inference-output.json --format report",
     "sample:json": "node ./src/cli.mjs --input examples/sample-inference-output.json --format json"

@@ -92,7 +92,7 @@ if (contradictedSchema.state !== SCHEMA_LIFECYCLE_STATES.CONTRADICTED) {
   throw new Error("Expected contradiction to transition schema lifecycle state.");
 }
 
-console.log("Schema check passed.");
+console.log("Context check passed.");
 
 function meaningRecord(id, title, themes, url, startedAt) {
   return {

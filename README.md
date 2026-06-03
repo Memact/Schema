@@ -1,12 +1,14 @@
-# Memact Schema
+# Memact Context
 
-Schema defines app category schemas for Memact.
+Memact Context is the open-source category layer that turns messy app signals into useful, user-readable context proposals.
 
-The main thing Schema categorizes is user context.
+Formerly this repo was called **Memact Schema**. Older issues and PRs may still say "Schema"; they are talking about this Context repo.
+
+The main thing Context organizes is user context.
 
 Apps may already have clean context, like `prefers short workouts` or `likes high-energy music`. They may also have app activity records, like skipped playlists, repeated orders, saved items, exported files, watched videos, completed lessons, search queries, or changed settings.
 
-Schema does not pretend every activity record is already context. It defines the category, fields, examples, and rules that help Memact turn activity into a user-readable context proposal later.
+Context does not pretend every activity record is already identity. It defines the category, fields, examples, and rules that help Memact turn activity into a user-readable proposal later.
 
 ## Core philosophy
 
@@ -14,13 +16,13 @@ Activity is not identity.
 
 A click, order, read, skip, replay, search, or export can be useful evidence. It is not automatically a stable fact about the user.
 
-A good schema should make that difference obvious. Repeated patterns can support a proposed context entry. One-off activity, curiosity, research, shared usage, trending events, and temporary needs should stay weak, temporary, or low-confidence.
+A good context category should make that difference obvious. Repeated patterns can support a proposed context entry. One-off activity, curiosity, research, shared usage, trending events, and temporary needs should stay weak, temporary, or low-confidence.
 
 ## For SSoC26 Contributors
 
 Start here if you are new to Memact.
 
-Schema is the main beginner-friendly contribution path. Pick an app category you understand and define what useful context looks like there.
+Context is the main beginner-friendly contribution path. Pick an app category you understand and define what useful context looks like there.
 
 Before starting, read:
 
@@ -32,13 +34,14 @@ Good first issues are labeled:
 - `SSoC26`
 - `good first issue`
 - `Easy`
-- `schema`
+- `context`
+- `schema` for older issues that have not been renamed yet
 
 Please comment on an issue before starting so work does not get duplicated.
 
 To claim an unassigned SSoC26 issue, comment `/claim`. The auto-assign workflow only claims open `Easy` or `Medium` SSoC26 issues that are not already assigned.
 
-A good category schema contribution should include:
+A good category contribution should include:
 
 - useful context fields
 - app activity examples
@@ -54,7 +57,7 @@ Prefer user-readable summaries over raw personal data. Do not infer sensitive tr
 
 ## Owns
 
-- App category schemas.
+- App category context rules.
 - Useful context fields for each app category.
 - Example app activity records.
 - Normalization rules.
@@ -75,7 +78,7 @@ Prefer user-readable summaries over raw personal data. Do not infer sensitive tr
 ## Flow
 
 ```text
-App activity or proposed context -> Category schema -> Wiki proposal -> User review -> Memory
+App activity or proposed context -> Category context rules -> Wiki proposal -> User review -> Memory
 ```
 
 ## Contributor Work
@@ -97,22 +100,27 @@ Examples:
 - productivity
 - AI assistants
 
-For each category, contributors can add schemas, activity examples, context fields, normalization rules, Wiki entry templates, access suggestions, and tests.
+For each category, contributors can add context rules, activity examples, context fields, normalization rules, Wiki entry templates, access suggestions, and tests.
 
-Example: a food app may show repeated sushi orders. Schema should describe when that can become a food preference, and when it should stay as temporary activity.
+Example: a food app may show repeated sushi orders. Context should describe when that can become a food preference, and when it should stay as temporary activity.
 
 ## Current Code
 
-The existing v0 engine is still present for compatibility while Schema moves toward category schemas.
+The existing v0 engine is still present for compatibility while Context moves toward category rules.
 
 Current exports include:
 
+- `shapeContextProposal(input, options)`
+- `shapeContextProposals(inputs, options)`
 - `formSchemaPackets(records, options)`
 - `groupByCategory(records)`
 - `inferSchemaType(record)`
 - `createSchemaPacket(group)`
 
-Do not treat Capture or Inference as current core product language. New work should prefer app category schemas and Wiki entry outputs.
+`shapeContextProposal` is the current product-facing path. The schema-packet
+functions remain for compatibility while older contributor work is migrated.
+
+Do not treat Capture or Inference as current core product language. New work should prefer app category context rules and Wiki entry outputs.
 
 ## Development
 
