@@ -86,6 +86,150 @@ export const contextMatchingExamples = Object.freeze([
     app_field: "budget limit",
     memact_fields: ["shopping.budget"],
     reason: "Budget limit maps to shopping.budget memory."
+  },
+  // --- Learning synonyms ---
+  {
+    app_field: "preferred format",
+    memact_fields: ["learning.stable_preferences.preferred_format"],
+    reason: "Preferred format maps to learning preferred format memory."
+  },
+  {
+    app_field: "learning pace",
+    memact_fields: ["learning.stable_preferences.preferred_pace"],
+    reason: "Learning pace maps to learning preferred pace memory."
+  },
+  {
+    app_field: "study pace",
+    memact_fields: ["learning.stable_preferences.preferred_pace"],
+    reason: "Study pace maps to learning preferred pace memory."
+  },
+  {
+    app_field: "explanation style",
+    memact_fields: ["learning.stable_preferences.explanation_style"],
+    reason: "Explanation style maps to learning explanation style memory."
+  },
+  {
+    app_field: "session length",
+    memact_fields: ["learning.stable_preferences.session_length_preference"],
+    reason: "Session length maps to learning session length preference memory."
+  },
+  {
+    app_field: "active topics",
+    memact_fields: ["learning.current_goals.active_topics"],
+    reason: "Active topics maps to learning current goals active topics memory."
+  },
+  {
+    app_field: "current difficulty",
+    memact_fields: ["learning.current_goals.current_difficulty"],
+    reason: "Current difficulty maps to learning current difficulty memory."
+  },
+  // --- Shopping synonyms ---
+  {
+    app_field: "preferred categories",
+    memact_fields: ["shopping.preferred_categories"],
+    reason: "Preferred categories maps to shopping preferred categories memory."
+  },
+  {
+    app_field: "disliked categories",
+    memact_fields: ["shopping.disliked_categories"],
+    reason: "Disliked categories maps to shopping disliked categories memory."
+  },
+  {
+    app_field: "preferred brands",
+    memact_fields: ["shopping.preferred_brands"],
+    reason: "Preferred brands maps to shopping preferred brands memory."
+  },
+  {
+    app_field: "shopping format",
+    memact_fields: ["shopping.preferred_format"],
+    reason: "Shopping format maps to shopping preferred format memory."
+  },
+  {
+    app_field: "purchase frequency",
+    memact_fields: ["shopping.purchase_frequency"],
+    reason: "Purchase frequency maps to shopping purchase frequency memory."
+  },
+  {
+    app_field: "spending range",
+    memact_fields: ["shopping.budget"],
+    reason: "Spending range maps to shopping budget memory."
+  },
+  {
+    app_field: "price range",
+    memact_fields: ["shopping.budget"],
+    reason: "Price range maps to shopping budget memory."
+  },
+  // --- Fitness synonyms ---
+  {
+    app_field: "fitness goal",
+    memact_fields: ["fitness.goal"],
+    reason: "Fitness goal maps to fitness goal memory."
+  },
+  {
+    app_field: "activity level",
+    memact_fields: ["fitness.activity_level"],
+    reason: "Activity level maps to fitness activity level memory."
+  },
+  {
+    app_field: "workout type",
+    memact_fields: ["fitness.preferred_workout_type"],
+    reason: "Workout type maps to fitness preferred workout type memory."
+  },
+  {
+    app_field: "preferred workout",
+    memact_fields: ["fitness.preferred_workout_type"],
+    reason: "Preferred workout maps to fitness preferred workout type memory."
+  },
+  {
+    app_field: "equipment available",
+    memact_fields: ["fitness.equipment_available"],
+    reason: "Equipment available maps to fitness equipment available memory."
+  },
+  {
+    app_field: "dietary preference",
+    memact_fields: ["diet.preference"],
+    reason: "Dietary preference maps to diet.preference memory."
+  },
+  {
+    app_field: "meal preference",
+    memact_fields: ["diet.preference"],
+    reason: "Meal preference maps to diet.preference memory."
+  },
+  {
+    app_field: "food preference",
+    memact_fields: ["diet.preference"],
+    reason: "Food preference maps to diet.preference memory."
+  },
+  // --- Identity synonyms ---
+  {
+    app_field: "full name",
+    memact_fields: ["identity.preferred_name"],
+    reason: "Full name maps to identity preferred name memory."
+  },
+  {
+    app_field: "handle",
+    memact_fields: ["identity.preferred_username"],
+    reason: "Handle maps to identity preferred username memory."
+  },
+  {
+    app_field: "screen name",
+    memact_fields: ["identity.preferred_username"],
+    reason: "Screen name maps to identity preferred username memory."
+  },
+  {
+    app_field: "profile name",
+    memact_fields: ["identity.preferred_name"],
+    reason: "Profile name maps to identity preferred name memory."
+  },
+  {
+    app_field: "timezone",
+    memact_fields: ["identity.timezone"],
+    reason: "Timezone maps to identity timezone memory."
+  },
+  {
+    app_field: "language preference",
+    memact_fields: ["identity.language"],
+    reason: "Language preference maps to identity language memory."
   }
 ])
 
